@@ -7,6 +7,7 @@ import Nav from "./functions/nav/Nav";
 import TabMenu from "./functions/tab-menu/TabMenu";
 import Board from "./functions/board/Board";
 import Back from "./functions/back/Back";
+import BoardPackage from "./functions/boardPackage/BoardPackage";
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                     <NewLink to="/slide">슬라이드</NewLink>
                     <NewLink to="/tab-menu">텝메뉴</NewLink>
                     <NewLink to="/board">게시판</NewLink>
+                    <NewLink to="/board-package">게시판(패키지)</NewLink>
                 </Links>
                 <Back />
                 <Route exact path="/star" component={StarRating}></Route>
@@ -29,6 +31,11 @@ function App() {
                 <Route exact path="/slide" component={Slide}></Route>
                 <Route exact path="/tab-menu" component={TabMenu}></Route>
                 <Route exact path="/board" component={Board}></Route>
+                <Route
+                    exact
+                    path="/board-package"
+                    component={BoardPackage}
+                ></Route>
                 <Nav />
             </HashRouter>
         </div>
