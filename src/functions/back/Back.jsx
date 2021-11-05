@@ -5,7 +5,6 @@ import { useHistory } from "react-router";
 
 const Back = () => {
     const history = useHistory();
-    console.log(history);
     return (
         <StyledBack
             onClick={() => {
