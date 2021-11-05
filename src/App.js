@@ -4,6 +4,8 @@ import ReactHookForm from "./functions/react-hook-form/reactHookForm";
 import styled from "styled-components";
 import Slide from "./functions/slide/Slide";
 import Nav from "./functions/nav/Nav";
+import TabMenu from "./functions/tab-menu/TabMenu";
+import Board from "./functions/board/Board";
 
 function App() {
     return (
@@ -13,17 +15,19 @@ function App() {
                     <NewLink to="/star">별점</NewLink>
                     <NewLink to="/react-hook-form">리액트 훅 폼</NewLink>
                     <NewLink to="/slide">슬라이드</NewLink>
-                    <NewLink to="/nav">네비게이션</NewLink>
+                    <NewLink to="/tab-menu">텝메뉴</NewLink>
+                    <NewLink to="/board">게시판</NewLink>
                 </Links>
-                <Route exact path="/star">
-                    <StarRating />
-                </Route>
-                <Route exact path="/react-hook-form">
-                    <ReactHookForm />
-                </Route>
-                <Route exact path="/slide">
-                    <Slide></Slide>
-                </Route>
+
+                <Route exact path="/star" component={StarRating}></Route>
+                <Route
+                    exact
+                    path="/react-hook-form"
+                    component={ReactHookForm}
+                ></Route>
+                <Route exact path="/slide" component={Slide}></Route>
+                <Route exact path="/tab-menu" component={TabMenu}></Route>
+                <Route exact path="/board" component={Board}></Route>
                 <Nav />
             </HashRouter>
         </div>
