@@ -6,6 +6,7 @@ import Slide from "./functions/slide/Slide";
 import Nav from "./functions/nav/Nav";
 import TabMenu from "./functions/tab-menu/TabMenu";
 import Board from "./functions/board/Board";
+import Back from "./functions/back/Back";
 
 function App() {
     return (
@@ -18,7 +19,7 @@ function App() {
                     <NewLink to="/tab-menu">텝메뉴</NewLink>
                     <NewLink to="/board">게시판</NewLink>
                 </Links>
-
+                <Back />
                 <Route exact path="/star" component={StarRating}></Route>
                 <Route
                     exact
