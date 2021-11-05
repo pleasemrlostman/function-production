@@ -3,6 +3,7 @@ import { HashRouter, Route, Link } from "react-router-dom";
 import ReactHookForm from "./functions/react-hook-form/reactHookForm";
 import styled from "styled-components";
 import Slide from "./functions/slide/Slide";
+import Nav from "./functions/nav/Nav";
 
 function App() {
     return (
@@ -12,6 +13,7 @@ function App() {
                     <NewLink to="/star">별점</NewLink>
                     <NewLink to="/react-hook-form">리액트 훅 폼</NewLink>
                     <NewLink to="/slide">슬라이드</NewLink>
+                    <NewLink to="/nav">네비게이션</NewLink>
                 </Links>
                 <Route exact path="/star">
                     <StarRating />
@@ -22,6 +24,7 @@ function App() {
                 <Route exact path="/slide">
                     <Slide></Slide>
                 </Route>
+                <Nav />
             </HashRouter>
         </div>
     );
