@@ -3,12 +3,16 @@ import axios from "axios";
 import styled from "styled-components";
 import Pagination from "react-js-pagination";
 import "./BoardPackage.css";
+import { Link } from "react-router-dom";
+import BoardPackageList from "./BoardPackageList";
 
 const BoardPackage = () => {
     const [posts, setPosts] = useState([]);
+    const [initPosts, setInitPosts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [postPerPage, setPostPerPage] = useState(10);
+    const [serachWrite, setSearchWrite] = useState("");
 
     // ---------------------------------------------
     // ---------------------------------------------
@@ -23,6 +27,7 @@ const BoardPackage = () => {
                     "https://jsonplaceholder.typicode.com/posts"
                 );
                 await setPosts(response.data);
+                await setInitPosts(response.data);
                 setLoading(false);
             } catch (e) {
                 console.log(e.response);
@@ -71,16 +76,64 @@ const BoardPackage = () => {
     // ---------------------------------------------
     // ---------------------------------------------
 
+    // ---------------------------------------------
+    // ---------------------------------------------
+    //      검색창 작업 시작
+    // ---------------------------------------------
+    // ---------------------------------------------
+
+    const onSearch = (e) => {
+        e.preventDefault();
+        let filteredPosts = [];
+        initPosts.map((value) => {
+            if (
+                value.title.toLowerCase().includes(serachWrite) ||
+                value.body.toLowerCase().includes(serachWrite)
+            ) {
+                filteredPosts.push(value);
+            }
+        });
+        if (serachWrite == "") {
+            setPosts(initPosts);
+            setCurrentPage(1);
+        } else {
+            setPosts(filteredPosts);
+            setCurrentPage(1);
+        }
+        console.log("how you like me now?");
+    };
+
+    const onChange = (e) => {
+        const {
+            target: { value },
+        } = e;
+        setSearchWrite(value);
+    };
+
+    // ---------------------------------------------
+    // ---------------------------------------------
+    //      검색창 작업 시작
+    // ---------------------------------------------
+    // ---------------------------------------------
     return (
         <BoardWrap>
             {currentPosts(posts).map((post) => {
                 return (
                     <BoardList key={post.id}>
-                        <div>
-                            <span>{post.id}.</span>
-                            <span>{post.title}</span>
-                        </div>
-                        <p>{post.body}</p>
+                        <Link
+                            to={{
+                                pathname: `/board-package/${post.id}`,
+                                state: {
+                                    post: post,
+                                },
+                            }}
+                        >
+                            <div>
+                                <span>{post.id}.</span>
+                                <span>{post.title}</span>
+                            </div>
+                            <p>{post.body}</p>
+                        </Link>
                     </BoardList>
                 );
             })}
@@ -91,9 +144,15 @@ const BoardPackage = () => {
                 totalItemsCount={posts.length}
                 pageRangeDisplayed={currentPosts(posts).length}
                 onChange={(page) => {
+                    console.log(page);
                     setCurrentPage(page);
                 }}
             ></StyledPagination>
+
+            <BoardSearchForm onSubmit={onSearch}>
+                <input onChange={onChange} type="text" />
+                <input type="submit" value="검색하기" />
+            </BoardSearchForm>
         </BoardWrap>
     );
 };
@@ -131,5 +190,23 @@ const BoardList = styled.div`
 const StyledPagination = styled(Pagination)`
     .pagination {
         border: 1px solid green;
+    }
+`;
+
+const BoardSearchForm = styled.form`
+    border: 1px solid blue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    input[type="text"] {
+        height: 30px;
+    }
+    input[type="submit"] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 30px;
+        padding: 10px;
     }
 `;

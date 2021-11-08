@@ -8,6 +8,7 @@ import TabMenu from "./functions/tab-menu/TabMenu";
 import Board from "./functions/board/Board";
 import Back from "./functions/back/Back";
 import BoardPackage from "./functions/boardPackage/BoardPackage";
+import BoardPackageList from "./functions/boardPackage/BoardPackageList";
 
 function App() {
     return (
@@ -28,6 +29,11 @@ function App() {
                     path="/react-hook-form"
                     component={ReactHookForm}
                 ></Route>
+                <Route
+                    exact
+                    path="/board-package/:id"
+                    component={BoardPackageList}
+                />
                 <Route exact path="/slide" component={Slide}></Route>
                 <Route exact path="/tab-menu" component={TabMenu}></Route>
                 <Route exact path="/board" component={Board}></Route>
