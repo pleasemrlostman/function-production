@@ -9,6 +9,7 @@ import Board from "./functions/board/Board";
 import Back from "./functions/back/Back";
 import BoardPackage from "./functions/boardPackage/BoardPackage";
 import BoardPackageList from "./functions/boardPackage/BoardPackageList";
+import InfinityScroll from "./functions/infinityScroll/InfinityScroll";
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                     <NewLink to="/tab-menu">텝메뉴</NewLink>
                     <NewLink to="/board">게시판</NewLink>
                     <NewLink to="/board-package">게시판(패키지)</NewLink>
+                    <NewLink to="/infinity-scroll">무한스크롤</NewLink>
                 </Links>
                 <Back />
                 <Route exact path="/star" component={StarRating}></Route>
@@ -41,6 +43,11 @@ function App() {
                     exact
                     path="/board-package"
                     component={BoardPackage}
+                ></Route>
+                <Route
+                    exact
+                    path="/infinity-scroll"
+                    component={InfinityScroll}
                 ></Route>
                 <Nav />
             </HashRouter>
