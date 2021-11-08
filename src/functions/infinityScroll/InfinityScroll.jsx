@@ -25,13 +25,6 @@ const InfinityScroll = () => {
     //     }
     // };
 
-    const io = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-            console.log(entry);
-        });
-    }, options);
-    io.observe(ImgWrap);
-
     useEffect(() => {
         const getData = async () => {
             try {
