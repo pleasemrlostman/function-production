@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Loading from "../loading/Loading";
 
@@ -8,22 +8,8 @@ const InfinityScroll = () => {
     const [item, setItem] = useState([]);
     const [lastItem, setLastItem] = useState(10);
 
-    // const getMoreData = () => {
-    //     let scrollHeight = Math.max(
-    //         document.documentElement.scrollHeight,
-    //         document.body.scrollHeight
-    //     );
-    //     let scrollTop = Math.max(
-    //         document.documentElement.scrollTop,
-    //         document.body.scrollTop
-    //     );
-    //     let clientHeight = document.documentElement.clientHeight;
-    //     console.log(scrollHeight, scrollTop, clientHeight);
-
-    //     if (scrollTop + clientHeight === scrollHeight) {
-    //         setLastItem(lastItem + 5);
-    //     }
-    // };
+    const viewport = useRef(null);
+    const target = useRef(null);
 
     useEffect(() => {
         const getData = async () => {
@@ -32,16 +18,46 @@ const InfinityScroll = () => {
                     "https://jsonplaceholder.typicode.com/photos"
                 );
                 const data = response.data.slice(0, lastItem);
-                setItem(data);
-                setLoading(false);
                 console.log(data);
+                setItem([...item, ...data]);
+                setLoading(false);
+                console.log(target.current);
             } catch (error) {
                 console.log(error);
             }
         };
         getData();
-        // window.addEventListener("scroll", getMoreData);
-    }, []);
+        // ==============================================
+        //  여기서 부터 infinity scroll 구현 시작
+        // ==============================================
+
+        const options = {
+            root: null,
+            threshold: 0,
+            rootMargin: "0px",
+        };
+
+        const handleIntersection = (entries, observer) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) {
+                    return;
+                }
+                // console.log(`${entry.target} 이거 도대체 뭐냐`);
+                setLastItem(lastItem + 5);
+                observer.unobserve(entry.target);
+                observer.observe(target.current);
+            });
+        };
+
+        const io = new IntersectionObserver(handleIntersection, options);
+        if (target.current) {
+            io.observe(target.current);
+        }
+        return () => io && io.disconnect();
+        // ==============================================
+        //  여기서 부터 infinity scroll 구현 끝
+        // ==============================================
+    }, [loading, lastItem, target]);
 
     return (
         <>
@@ -51,9 +67,12 @@ const InfinityScroll = () => {
                 </LoadingWrap>
             ) : (
                 <ImgWrap>
-                    {item.map((value) => {
+                    {item.map((value, index) => {
+                        const lastEl = index === item.length - 1;
                         return (
                             <ImgList
+                                key={index}
+                                ref={lastEl ? target : null}
                                 style={{ backgroundImage: `url(${value.url})` }}
                             ></ImgList>
                         );
