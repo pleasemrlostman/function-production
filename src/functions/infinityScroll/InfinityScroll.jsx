@@ -1,67 +1,53 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
 import Loading from "../loading/Loading";
 
 const InfinityScroll = () => {
     const [loading, setLoading] = useState(true);
     const [item, setItem] = useState([]);
-    const [lastItem, setLastItem] = useState(10);
-    const target = useRef(null);
+    const [target,setTarget] = useState(null);
     const [detailDescription, setDetailDescription] = useState(false);
 
     const [preItems, setPreItmes] = useState(0);
     const [last, setLast] = useState(10);
 
-    useEffect(() => {
-        const getData = async () => {
-            try {
+    const getData = useCallback(()=>{
+        async function fetch(){
+            try{
                 const response = await axios.get(
                     "https://jsonplaceholder.typicode.com/photos"
                 );
                 const data = response.data.slice(preItems, last);
                 setItem((prev) => [...prev, ...data]);
                 setLoading(false);
-                console.log(target.current);
-            } catch (error) {
-                console.log(error);
+            }catch(e){
+                console.error(e);
             }
-        };
-        getData();
-        // ==============================================
-        //  여기서 부터 infinity scroll 구현 시작
-        // ==============================================
-        const options = {
-            root: null,
-            threshold: 1,
-            rootMargin: "0px",
-        };
-        const handleIntersection = (entries, observer) => {
-            console.dir(entries);
-            // entries에 useRef값이 한개들어가서 배열이만들어짐
-            entries.forEach((entry) => {
-                // useRef값 그거한개만 반복문돌리는중임
-                console.log(entry);
-                if (!entry.isIntersecting) {
-                    return;
-                } else {
-                    // setLastItem((prev) => {
-                    //     return prev + 10;
-                    // });
-                    observer.unobserve(entry.target);
-                    observer.observe(target.current);
-                }
-            });
-        };
-        const io = new IntersectionObserver(handleIntersection, options);
-        if (target.current) {
-            io.observe(target.current);
         }
-        return () => io && io.disconnect();
-        // ==============================================
-        //  여기서 부터 infinity scroll 구현 끝
-        // ==============================================
-    }, [loading]);
+        fetch();
+    },[]);
+    
+    useEffect(() => {getData()}, []);
+
+    useEffect(() => {
+        let observer;
+        if (target) {
+          // 새로운 관찰객체 생성
+          const callback = ([entry], observer) => {
+            if (entry.isIntersecting) {
+              getData();
+              observer.unobserve(target);
+            }
+          }
+          const options = { threshold: 1 };
+          observer = new IntersectionObserver(callback,options);
+          observer.observe(target);
+        }
+    
+        // unmount 시 모든 관찰 해제
+        return () => observer && observer.disconnect();
+      }, [target]);
 
     return (
         <>
@@ -135,17 +121,17 @@ const InfinityScroll = () => {
                         ) : null}
                     </div>
                     <ImgWrap>
-                        {item.map((value, index) => {
-                            const lastEl = index === item.length - 1;
+                        {item.map((value, index, arr) => {
+                            const lastEl = index === arr.length - 1;
                             return (
                                 <ImgList
                                     key={index}
-                                    ref={lastEl ? target : null}
-                                    // ref={target}
                                     style={{
                                         backgroundImage: `url(${value.url})`,
                                     }}
-                                ></ImgList>
+                                >
+                                    {lastEl && <span ref={setTarget}></span>}
+                                </ImgList>
                             );
                         })}
                     </ImgWrap>
