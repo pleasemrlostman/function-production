@@ -8,6 +8,8 @@ const InfinityScroll = () => {
     const [item, setItem] = useState([]);
     const [target, setTarget] = useState(null);
     const [detailDescription, setDetailDescription] = useState(false);
+
+    const [preItems, setPreItmes] = useState(0);
     const [last, setLast] = useState(10);
 
     const getData = useCallback(() => {
@@ -16,7 +18,8 @@ const InfinityScroll = () => {
                 const response = await axios.get(
                     "https://jsonplaceholder.typicode.com/photos"
                 );
-                const data = response.data;
+                const data = response.data.slice(preItems, last);
+                setItem((prev) => [...prev, ...data]);
                 setLoading(false);
             } catch (e) {
                 console.error(e);
@@ -79,7 +82,7 @@ const InfinityScroll = () => {
                                     여기서 중요한점은 IntersectionObserver의 첫
                                     번째 인자인 콜백함수가 entries라는 인자를
                                     받는다 그런데 해당인자(entries)는
-                                    IntersectionObserverEntry 라는 객체인데
+                                    IntersectionObserverEntry 라는 객체인데
                                     해당객체는 target이라는 프로퍼티를
                                     가지고있는다.
                                     <span
@@ -133,7 +136,6 @@ const InfinityScroll = () => {
                                 </ImgList>
                             );
                         })}
-                        <div ref={target}></div>
                     </ImgWrap>
                 </>
             )}
