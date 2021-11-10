@@ -9,8 +9,8 @@ const InfinityScroll = () => {
     const [target, setTarget] = useState(null);
     const [detailDescription, setDetailDescription] = useState(false);
 
-    const [preItems, setPreItmes] = useState(0);
-    const [last, setLast] = useState(10);
+    const [startIndex, setStartItmes] = useState(0);
+    const [lastIndex, setLastIndex] = useState(10);
 
     const getData = useCallback(() => {
         async function fetch() {
@@ -18,7 +18,7 @@ const InfinityScroll = () => {
                 const response = await axios.get(
                     "https://jsonplaceholder.typicode.com/photos"
                 );
-                const data = response.data.slice(preItems, last);
+                const data = response.data.slice(startIndex, lastIndex);
                 setItem((prev) => [...prev, ...data]);
                 setLoading(false);
             } catch (e) {
@@ -26,18 +26,35 @@ const InfinityScroll = () => {
             }
         }
         fetch();
-    }, []);
+    }, [startIndex, lastIndex]);
 
     useEffect(() => {
         getData();
     }, []);
 
     useEffect(() => {
+        setStartItmes((prev) => prev + 10);
+        setLastIndex((prev) => prev + 10);
+        console.log("Hello World");
+        // 의도했던 논릴는 처음에는 response.data.slice(0, 10), 즉 배열을 10개씩 잘라서 들고온다
+        // 그러면 target이 바뀔 때 마다 startIndex, lastIndex 에 10씩 더해준다.
+        // 그리고 useCallBack으로 생성된 fetch 함수에 startIndex, lastIndex가 변경되면 새로 함수를 만들어줘서
+        // const data = response.data.slice(startIndex, lastIndex) 에 변경된 startIndex, LastIndex 값 즉 저번값에 각각 + 10된값을 넣어준다
+        // 그리고  setItem에 지난배열뒤에 달아줘서 무한스크롤 기능을 완성시킨다.
+
+        // 일단 맨처음에 설정한 Index들 값들은 0 , 10 이다 그래서 처음에 useCallBack으로 만들어진 함수는 startIndex, lastIndex 0, 10값을 가져온다. 그래서 무조건 0, 10을 가져오는 함수가 실행됨
+        // 그리고 그다음 useEffect가 실행됨 setStartItmes, setLastIndex로  값을 10씩 더해줬기 때문에 맨 처음 화면이 렌더됐을 때 startIndex, lastIndex값은 10, 20이다.
+        // 그런데 traget이 바뀌면 useEffect값은 한번 더 실행된다. 즉 getData 함수가 실행됐기 때문에 target이 변경되어 한번 더 실행 되어 현재 index 값들이 20, 30이되어버림
+        // 그러면 현재 startIndex와 lastIndex가 20, 30이니 스크롤해서 가져오는 데이터는 id값이 20~30을 가져와야하는데 11~20값을 가져오고 있는데 왜 그런지 잘 모르겠습니다 ......
+
+        // startIndex, lastIndex값이 10, 20에서 20, 30으로 변경되는 중간에 어떤 연결고리가 있는거 같은데 그걸 잘 못찾겠습니다....
+
         let observer;
         if (target) {
             // 새로운 관찰객체 생성
             const callback = ([entry], observer) => {
                 if (entry.isIntersecting) {
+                    console.log(item);
                     getData();
                     observer.unobserve(target);
                 }
