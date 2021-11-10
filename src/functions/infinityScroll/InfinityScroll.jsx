@@ -6,48 +6,47 @@ import Loading from "../loading/Loading";
 const InfinityScroll = () => {
     const [loading, setLoading] = useState(true);
     const [item, setItem] = useState([]);
-    const [target,setTarget] = useState(null);
+    const [target, setTarget] = useState(null);
     const [detailDescription, setDetailDescription] = useState(false);
-
-    const [preItems, setPreItmes] = useState(0);
     const [last, setLast] = useState(10);
 
-    const getData = useCallback(()=>{
-        async function fetch(){
-            try{
+    const getData = useCallback(() => {
+        async function fetch() {
+            try {
                 const response = await axios.get(
                     "https://jsonplaceholder.typicode.com/photos"
                 );
-                const data = response.data.slice(preItems, last);
-                setItem((prev) => [...prev, ...data]);
+                const data = response.data;
                 setLoading(false);
-            }catch(e){
+            } catch (e) {
                 console.error(e);
             }
         }
         fetch();
-    },[]);
-    
-    useEffect(() => {getData()}, []);
+    }, []);
+
+    useEffect(() => {
+        getData();
+    }, []);
 
     useEffect(() => {
         let observer;
         if (target) {
-          // 새로운 관찰객체 생성
-          const callback = ([entry], observer) => {
-            if (entry.isIntersecting) {
-              getData();
-              observer.unobserve(target);
-            }
-          }
-          const options = { threshold: 1 };
-          observer = new IntersectionObserver(callback,options);
-          observer.observe(target);
+            // 새로운 관찰객체 생성
+            const callback = ([entry], observer) => {
+                if (entry.isIntersecting) {
+                    getData();
+                    observer.unobserve(target);
+                }
+            };
+            const options = { threshold: 1 };
+            observer = new IntersectionObserver(callback, options);
+            observer.observe(target);
         }
-    
+
         // unmount 시 모든 관찰 해제
         return () => observer && observer.disconnect();
-      }, [target]);
+    }, [target]);
 
     return (
         <>
@@ -134,6 +133,7 @@ const InfinityScroll = () => {
                                 </ImgList>
                             );
                         })}
+                        <div ref={target}></div>
                     </ImgWrap>
                 </>
             )}
