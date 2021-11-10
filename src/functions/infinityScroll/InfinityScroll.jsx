@@ -9,8 +9,7 @@ const InfinityScroll = () => {
     const [target, setTarget] = useState(null);
     const [detailDescription, setDetailDescription] = useState(false);
 
-    const [startIndex, setStartItmes] = useState(0);
-    const [lastIndex, setLastIndex] = useState(10);
+    const [fetchCount, setFetchCount] = useState(0);
 
     const getData = useCallback(() => {
         async function fetch() {
@@ -18,23 +17,25 @@ const InfinityScroll = () => {
                 const response = await axios.get(
                     "https://jsonplaceholder.typicode.com/photos"
                 );
+                const startIndex = 0 + fetchCount * 10;
+                const lastIndex = 10 + fetchCount * 10;
                 const data = response.data.slice(startIndex, lastIndex);
                 setItem((prev) => [...prev, ...data]);
                 setLoading(false);
             } catch (e) {
                 console.error(e);
+            } finally{
+                setFetchCount(count=>count+1);
             }
         }
         fetch();
-    }, [startIndex, lastIndex]);
+    }, [fetchCount]);
 
     useEffect(() => {
         getData();
     }, []);
 
     useEffect(() => {
-        setStartItmes((prev) => prev + 10);
-        setLastIndex((prev) => prev + 10);
         console.log("Hello World");
         // 의도했던 논릴는 처음에는 response.data.slice(0, 10), 즉 배열을 10개씩 잘라서 들고온다
         // 그러면 target이 바뀔 때 마다 startIndex, lastIndex 에 10씩 더해준다.
@@ -66,7 +67,7 @@ const InfinityScroll = () => {
 
         // unmount 시 모든 관찰 해제
         return () => observer && observer.disconnect();
-    }, [target]);
+    }, [target,getData]);
 
     return (
         <>
